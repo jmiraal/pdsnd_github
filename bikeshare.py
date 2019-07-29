@@ -689,10 +689,13 @@ def call_option(stat_option):
             break
         city, month, day, user_type, user_gender  = get_filters("","0" ,"0" , "0", "0")
         df = load_data(city, month, day, user_type, user_gender)
-        if not (percentage_option == 'gender' and 'Gender' not in df.columns):
+        if not ((percentage_option == 'gender' and 'Gender' not in df.columns) or (percentage_option == 'age group' and 'age group' not in df.columns)):
             percentage_comp_stats(df, percentage_option, day_week_option)
-        else:
+        elif percentage_option == 'gender':
             print('There is no information about the gender in this file.')
+        elif percentage_option == 'age group':
+            print('There is no information about the year of birth in this file.')
+
         restart = input('\nWould you like to restart this option? Enter (y)es or (n)o.\n')
         if not(restart.lower() == 'yes' or restart.lower() == 'y'):
             break
