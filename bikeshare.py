@@ -224,7 +224,11 @@ def display_data(df):
 
 
 def show_plot(df,stat_option):
-    """print different plots depending of the stat option"""
+    """
+    print different plots depending of the stat option
+    Args:
+    (int) stat_option - Main program option ("global", "trip table", "correlation", "percentage")
+    """
 
     if stat_option == "percentage":
         df.plot.bar(stacked=True, color=sns.color_palette("Blues"))
