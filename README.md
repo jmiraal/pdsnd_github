@@ -5,7 +5,7 @@
 # Explore US Bikeshare Data
 
 ### Description
-This project was created as the final work for the Nanodegreee Programming for Data Science.
+This project was created as the final work for the Nanodegree Programming for Data Science.
 The objective of this project is to use Python to explore data related to bike share systems for three major cities in the United States: Chicago, New York City, and Washington.
 
 The program ask the user about what kind of statistics wants to see. It asks the user also about the filters to apply and the city they want to explore.
@@ -42,13 +42,15 @@ bikeshare.py
 ### Credits
 1. As part of the Nanodegree course, It has been used the documentation provided by Udacity:
 
-https://eu.udacity.com/course/programming-for-data-science-nanodegree--nd104
+[Udacity Nanodegree Programming for Data Science](https://eu.udacity.com/course/programming-for-data-science-nanodegree--nd104)
 
 2. The rest of the information, solutions to problems, etc, was taken from the official pages:
 
-https://docs.python.org/3/contents.html
-https://pandas.pydata.org/pandas-docs/stable/reference/index.html
+[Panda API Reference](https://pandas.pydata.org/pandas-docs/stable/reference/index.html)
 
-3. And the blogspot:
+[Python Documentation](https://docs.python.org/3/contents.html)
 
-https://stackoverflow.com/questions 
+
+3. And the in the blogspot:
+
+[Stack Overflow](https://stackoverflow.com/questions)
