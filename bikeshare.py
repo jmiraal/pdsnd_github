@@ -143,7 +143,7 @@ def load_data(city, month, day, user_type, user_gender):
     #create a column with the age and another with the group of age.
     if 'Birth Year' in df.columns:
         df['age'] = df['Start Time'].dt.year - df['Birth Year']
-        df['age group'] = df['age'].apply(lambda x: 1 if x < 25 else (2 if x in range(25,35) else (3 if x in range(35,45) else (4 if x in range(45,55) else 5))))
+        df['Age Group'] = df['age'].apply(lambda x: 1 if x < 25 else (2 if x in range(25,35) else (3 if x in range(35,45) else (4 if x in range(45,55) else 5))))
 
     # combine Start Station and End Station to define a trip.
     df['Trip'] = df['Start Station']+ ' <---> ' +  df['End Station']
@@ -504,62 +504,27 @@ def percentage_comp_stats(df, percentage_option, day_week_option):
     print('\nCalculating Percentage stats...\n')
     start_time = time.time()
 
-    #calcs for age group.
-    if percentage_option == 'age group':
-        if day_week_option == 'all days':
-            df = df.groupby(['week_day', 'age group']).agg({"Trip Duration":['count']})
-            df = df.groupby(level=0).apply(lambda x: 100 * x / float(x.sum()))
-            df.columns = [" ".join(x) for x in df.columns.ravel()]
-            df.reset_index(inplace=True)
-            df.columns = ['Week Day', 'Group', 'Trip Duration(%)']
-            df['Week Day'] = pd.Categorical(df['Week Day'], categories = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday', 'Sunday'], ordered=True)
-            df.sort_values(by=['Week Day', 'Group'], ascending = True, inplace=True)
-            df = df.pivot(index='Week Day', columns='Group', values='Trip Duration(%)')
-        if day_week_option == 'workdays and weekend':
-            df = df.groupby(['day type', 'age group']).agg({"Trip Duration":['count']})
-            df = df.groupby(level=0).apply(lambda x: 100 * x / float(x.sum()))
-            df.columns = [" ".join(x) for x in df.columns.ravel()]
-            df.reset_index(inplace=True)
-            df.columns = ['Type of Day', 'Group', 'Trip Duration(%)']
-            df = df.pivot(index='Type of Day', columns='Group', values='Trip Duration(%)')
+    #calcs for every percentage_option ('age group', 'user type', 'gender')
+    #group the dataframe by (days or day type) and the percentage option
+    #calc the percentage on every time period (day or day type)
+    #reorder the data frame and make the pivot to pass the df to be displayed and showed in a stacked bar plot
+    if day_week_option == 'all days':
+        df = df.groupby(['week_day', percentage_option.title()]).agg({"Trip Duration":['count']})
+        df = df.groupby(level=0).apply(lambda x: 100 * x / float(x.sum()))
+        df.columns = [" ".join(x) for x in df.columns.ravel()]
+        df.reset_index(inplace=True)
+        df.columns = ['Week Day', percentage_option.title(), 'Trip Duration(%)']
+        df['Week Day'] = pd.Categorical(df['Week Day'], categories = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday', 'Sunday'], ordered=True)
+        df.sort_values(by=['Week Day', percentage_option.title()], ascending = True, inplace=True)
+        df = df.pivot(index='Week Day', columns=percentage_option.title(), values='Trip Duration(%)')
+    if day_week_option == 'workdays and weekend':
+        df = df.groupby(['day type', percentage_option.title()]).agg({"Trip Duration":['count']})
+        df = df.groupby(level=0).apply(lambda x: 100 * x / float(x.sum()))
+        df.columns = [" ".join(x) for x in df.columns.ravel()]
+        df.reset_index(inplace=True)
+        df.columns = ['Type of Day', percentage_option.title(), 'Trip Duration(%)']
+        df = df.pivot(index='Type of Day', columns=percentage_option.title(), values='Trip Duration(%)')
 
-    #calcs for user type.
-    if percentage_option == 'user type':
-        if day_week_option == 'all days':
-            df = df.groupby(['week_day', 'User Type']).agg({"Trip Duration":['count']})
-            df = df.groupby(level=0).apply(lambda x: 100 * x / float(x.sum()))
-            df.columns = [" ".join(x) for x in df.columns.ravel()]
-            df.reset_index(inplace=True)
-            df.columns = ['Week Day', 'User Type', 'Trip Duration(%)']
-            df['Week Day'] = pd.Categorical(df['Week Day'], categories = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday', 'Sunday'], ordered=True)
-            df.sort_values(by=['Week Day', 'User Type'], ascending = True, inplace=True)
-            df = df.pivot(index='Week Day', columns='User Type', values='Trip Duration(%)')
-        if day_week_option == 'workdays and weekend':
-            df = df.groupby(['day type', 'User Type']).agg({"Trip Duration":['count']})
-            df = df.groupby(level=0).apply(lambda x: 100 * x / float(x.sum()))
-            df.columns = [" ".join(x) for x in df.columns.ravel()]
-            df.reset_index(inplace=True)
-            df.columns = ['Type of Day', 'User Type', 'Trip Duration(%)']
-            df = df.pivot(index='Type of Day', columns='User Type', values='Trip Duration(%)')
-
-    #calcs for gender user type.
-    if percentage_option == 'gender':
-        if day_week_option == 'all days':
-            df = df.groupby(['week_day', 'Gender']).agg({"Trip Duration":['count']})
-            df = df.groupby(level=0).apply(lambda x: 100 * x / float(x.sum()))
-            df.columns = [" ".join(x) for x in df.columns.ravel()]
-            df.reset_index(inplace=True)
-            df.columns = ['Week Day', 'Gender', 'Trip Duration(%)']
-            df['Week Day'] = pd.Categorical(df['Week Day'], categories = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday', 'Sunday'], ordered=True)
-            df.sort_values(by=['Week Day', 'Gender'], ascending = True, inplace=True)
-            df = df.pivot(index='Week Day', columns='Gender', values='Trip Duration(%)')
-        if day_week_option == 'workdays and weekend':
-            df = df.groupby(['day type', 'Gender']).agg({"Trip Duration":['count']})
-            df = df.groupby(level=0).apply(lambda x: 100 * x / float(x.sum()))
-            df.columns = [" ".join(x) for x in df.columns.ravel()]
-            df.reset_index(inplace=True)
-            df.columns = ['Type of Day', 'Gender', 'Trip Duration(%)']
-            df = df.pivot(index='Type of Day', columns='Gender', values='Trip Duration(%)')
 
     print("\nThis took %s seconds." % (time.time() - start_time))
     print('-'*40 + '\n' )
@@ -677,7 +642,7 @@ def call_option(stat_option):
             break
         city, month, day, user_type, user_gender  = get_filters("","0" ,"0" , "0", "0")
         df = load_data(city, month, day, user_type, user_gender)
-        if not ((percentage_option == 'gender' and 'Gender' not in df.columns) or (percentage_option == 'age group' and 'age group' not in df.columns)):
+        if not ((percentage_option == 'gender' and 'Gender' not in df.columns) or (percentage_option == 'age group' and 'Age Group' not in df.columns)):
             percentage_comp_stats(df, percentage_option, day_week_option)
         elif percentage_option == 'gender':
             print('There is no information about the gender in this file.')
