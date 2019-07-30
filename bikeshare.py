@@ -442,35 +442,23 @@ def correlation_stats(df, correlation_option, week_day_option):
     df2 = pd.DataFrame()
     df3 = pd.DataFrame()
 
-    #filter by user type and type of day (all, work days o weekends).
+    #divide by user type for all week_day_option
     if correlation_option == 'user type':
+        df1 = df[df['User Type']=='Subscriber']
+        df2 = df[df['User Type']=='Customer']
+    #divide by gender for all week_day_option
+    elif correlation_option == 'gender':
+        df1 = df[df['Gender']=='Male']
+        df2 = df[df['Gender']=='Female']
 
-        if week_day_option == 'all':
-            df1 = df[df['User Type']=='Subscriber']
-            df2 = df[df['User Type']=='Customer']
-
-        if week_day_option == 'weekends':
-            df1 = df.loc[((df['week_day'] == 'Sunday') | (df['week_day'] == 'Saturday')) & (df['User Type']=='Subscriber')]
-            df2 = df.loc[((df['week_day'] == 'Sunday') | (df['week_day'] == 'Saturday')) & (df['User Type']=='Customer')]
-
-        if week_day_option == 'working days':
-            df1 = df.loc[(df['week_day'] != 'Sunday') & (df['week_day'] != 'Saturday') & (df['User Type']=='Subscriber')]
-            df2 = df.loc[(df['week_day'] != 'Sunday') & (df['week_day'] != 'Saturday') & (df['User Type']=='Customer')]
-
-    #filter by gender and type of day (all, work days o weekends).
-    if correlation_option == 'gender':
-
-        if week_day_option == 'all':
-            df1 = df[df['Gender']=='Male']
-            df2 = df[df['Gender']=='Female']
-
-        if week_day_option == 'weekends':
-            df1 = df.loc[((df['week_day'] == 'Sunday') | (df['week_day'] == 'Saturday')) & (df['Gender']=='Male')]
-            df2 = df.loc[((df['week_day'] == 'Sunday') | (df['week_day'] == 'Saturday')) & (df['Gender']=='Female')]
-
-        if week_day_option == 'working days':
-            df1 = df.loc[(df['week_day'] != 'Sunday') & (df['week_day'] != 'Saturday') & (df['Gender']=='Male')]
-            df2 = df.loc[(df['week_day'] != 'Sunday') & (df['week_day'] != 'Saturday') & (df['Gender']=='Female')]
+    #filter by type of day (all, work days o weekends)
+    #for correlation_option = 'user type' or 'gender'
+    if week_day_option == 'weekends':
+        df1 = df1[df1['day type']=='weekend']
+        df2 = df2[df2['day type']=='weekend']
+    elif week_day_option == 'working days':
+        df1 = df1[df1['day type']=='work']
+        df2 = df2[df2['day type']=='work']
 
     #count the trips by day.
     df1 = df1.groupby('date').agg({"Trip Duration":['count']})
