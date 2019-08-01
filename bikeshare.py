@@ -229,17 +229,21 @@ def show_plot(df,stat_option):
     Args:
     (int) stat_option - Main program option ("global", "trip table", "correlation", "percentage")
     """
-
     if stat_option == "percentage":
         df.plot.bar(stacked=True, color=sns.color_palette("Blues"))
+        plt.gcf().canvas.set_window_title('Percentage Table')
 
     if stat_option == "correlation":
         df.plot(kind='scatter', x = 0, y = 1)
+        plt.gcf().canvas.set_window_title('Correlation Table')
 
     if stat_option == "trip table":
         df.plot(kind='bar', y = 'Trip Duration count')
+        plt.gcf().canvas.set_window_title('Count Trip Table')
         df.plot(kind='bar', y = 'Trip Duration sum')
+        plt.gcf().canvas.set_window_title('Sum Trip Table')
         df.plot(kind='bar', y = 'Trip Duration mean')
+        plt.gcf().canvas.set_window_title('Mean Trip Table')
 
     plt.tight_layout()
     plt.show()
