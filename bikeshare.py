@@ -143,7 +143,7 @@ def load_data(city, month, day, user_type, user_gender):
     #create a column with the age and another with the group of age.
     if 'Birth Year' in df.columns:
         df['age'] = df['Start Time'].dt.year - df['Birth Year']
-        df['Age Group'] = df['age'].apply(lambda x: 1 if x < 25 else (2 if x in range(25,35) else (3 if x in range(35,45) else (4 if x in range(45,55) else 5))))
+        df['Age Group'] = df['age'].apply(lambda x: "lower 25" if x < 25 else ("25 to 35" if x in range(25,35) else ("35 to 45" if x in range(35,45) else ("45 to 55" if x in range(45,55) else "older 55"))))
 
     # combine Start Station and End Station to define a trip.
     df['Trip'] = df['Start Station']+ ' <---> ' +  df['End Station']
@@ -519,7 +519,7 @@ def percentage_comp_stats(df, percentage_option, day_week_option):
         df.reset_index(inplace=True)
         df.columns = ['Week Day', percentage_option.title(), 'Trip Duration(%)']
         df['Week Day'] = pd.Categorical(df['Week Day'], categories = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday', 'Sunday'], ordered=True)
-        df.sort_values(by=['Week Day', percentage_option.title()], ascending = True, inplace=True)
+        df.sort_values(by=['Week Day'], ascending = True, inplace=True)
         df = df.pivot(index='Week Day', columns=percentage_option.title(), values='Trip Duration(%)')
     if day_week_option == 'workdays and weekend':
         df = df.groupby(['day type', percentage_option.title()]).agg({"Trip Duration":['count']})
@@ -529,6 +529,8 @@ def percentage_comp_stats(df, percentage_option, day_week_option):
         df.columns = ['Type of Day', percentage_option.title(), 'Trip Duration(%)']
         df = df.pivot(index='Type of Day', columns=percentage_option.title(), values='Trip Duration(%)')
 
+    if percentage_option == "age group":
+        df = df[["lower 25", "25 to 35", "35 to 45", "45 to 55", "older 55"]]
 
     print("\nThis took %s seconds." % (time.time() - start_time))
     print('-'*40 + '\n' )
